@@ -1,9 +1,12 @@
-int updateCheckingAccountBalance(long int CPF, double value);
-int updateSavingsAccountBalance(long int CPF, double value);
+#ifndef ACCOUNT_WRAPPER_H
+#define ACCOUNT_WRAPPER_H
 
-int updateCheckingAccountBalance(long int CPF, double value){
-    return 0;
+static inline int updateCheckingAccountBal(long int CPF, double value){
+    (void)CPF; (void)value; return 0;
 }
-int updateSavingsAccountBalance(long int CPF, double value){
-    return 0;
+
+static inline int updateSavingsAccountBal(long int CPF, double value){
+    (void)CPF; (void)value; return 0;
 }
+
+#endif /* ACCOUNT_WRAPPER_H */ 

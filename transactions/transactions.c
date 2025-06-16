@@ -70,56 +70,56 @@ static void addTransaction(long int CPF, transaction *tx){
 }
 
 // cria nó de transação e devolve ponteiro
-static transactionList *newTransactionNode(transaction *tx){
-    transactionList *node = malloc(sizeof *node);
-    if (!node) return NULL;
-    node->transaction = tx;
-    node->next = NULL;
-    node->root = node; /* provisório; será ajustado pela função chamadora */
-    return node;
-}
+// static transactionList *newTransactionNode(transaction *tx){
+//     transactionList *node = malloc(sizeof *node);
+//     if (!node) return NULL;
+//     node->transaction = tx;
+//     node->next = NULL;
+//     node->root = node; /* provisório; será ajustado pela função chamadora */
+//     return node;
+// }
 
 // Adiciona uma transação a uma lista já existente (lista pertence a um CPF).
-static int addTransactionToList(transactionList *list, transaction *tx){
-    if (!list) return 1;
+// static int addTransactionToList(transactionList *list, transaction *tx){
+//     if (!list) return 1;
 
-    transactionList *newNode = newTransactionNode(tx);
-    if (!newNode) return -1;
+//     transactionList *newNode = newTransactionNode(tx);
+//     if (!newNode) return -1;
 
-    newNode->root = list->root ? list->root : list; /* mantém referência */
+//     newNode->root = list->root ? list->root : list; /* mantém referência */
 
-    transactionList *cur = list;
-    while (cur->next) cur = cur->next;
-    cur->next = newNode;
-    return 0;
-}
+//     transactionList *cur = list;
+//     while (cur->next) cur = cur->next;
+//     cur->next = newNode;
+//     return 0;
+// }
 
 // Insere a lista de transações de um CPF na estrutura global.
-static int addTransactionListToList(transactionList *list){
-    if (!list)               return 1; // ponteiro inválido
-    if (!list->transaction)  return 2; // nó mal-formado
+// static int addTransactionListToList(transactionList *list){
+//     if (!list)               return 1; // ponteiro inválido
+//     if (!list->transaction)  return 2; // nó mal-formado
 
-    long int CPF = list->transaction->sourceCPF;
+//     long int CPF = list->transaction->sourceCPF;
 
-    transactionListsList *node = findTransactionList(transactionListsHead, CPF);
-    if (node) {
-        /* Já existe lista → apenas anexar transação */
-        return addTransactionToList(node->list, list->transaction);
-    }
+//     transactionListsList *node = findTransactionList(transactionListsHead, CPF);
+//     if (node) {
+//         /* Já existe lista → apenas anexar transação */
+//         return addTransactionToList(node->list, list->transaction);
+//     }
 
-    transactionListsList *newList = malloc(sizeof *newList);
-    if (!newList) return -1; /* erro de alocação */
+//     transactionListsList *newList = malloc(sizeof *newList);
+//     if (!newList) return -1; /* erro de alocação */
 
-    newList->CPF  = CPF;
-    newList->list = list;
-    newList->next = transactionListsHead;
-    transactionListsHead = newList;
+//     newList->CPF  = CPF;
+//     newList->list = list;
+//     newList->next = transactionListsHead;
+//     transactionListsHead = newList;
 
-    /* Ajusta campo root de todos os nós recém-inseridos */
-    for (transactionList *p = list; p; p = p->next) p->root = list;
+//     /* Ajusta campo root de todos os nós recém-inseridos */
+//     for (transactionList *p = list; p; p = p->next) p->root = list;
 
-    return 0;
-}
+//     return 0;
+// }
 
 // 0 para depósito, 1 para saque
 int makeTransactionSavings(double value, long int sourceCPF, long int targetCPF, int depositOrWithdrawal, struct tm date) {
@@ -144,13 +144,13 @@ int makeTransactionSavings(double value, long int sourceCPF, long int targetCPF,
 
     if (depositOrWithdrawal == 0) {
         strcpy(tx->type, "deposit");
-        result = updateSavingsAccountBalance(sourceCPF, value);
+        result = updateSavingsAccountBal(sourceCPF, value);
         if (result == 2) {
             return 3; // CPF nao encontrado
         }
     } else {
         strcpy(tx->type, "withdrawal");
-        result = updateSavingsAccountBalance(sourceCPF, -value);
+        result = updateSavingsAccountBal(sourceCPF, -value);
         if (result == 1) {
             return 5; // saldo insuficiente
         }
@@ -172,14 +172,14 @@ int makeTransactionChecking(double value, long int sourceCPF, long int targetCPF
     tx->date = date;
     strcpy(tx->type, "transfer");
 
-    result = updateCheckingAccountBalance(sourceCPF, -value);
+    result = updateCheckingAccountBal(sourceCPF, -value);
     if (result == 1) {
         return 5; // saldo insuficiente
     }
     if (result == 2) {
         return 3; // CPF nao encontrado
     }
-    result = updateCheckingAccountBalance(targetCPF, value);
+    result = updateCheckingAccountBal(targetCPF, value);
     if (result == 2) {
         return 3; // CPF nao encontrado
     }

@@ -3,7 +3,7 @@
 #include <string.h>
 
 /* Inclui diretamente o módulo de transações (código já contém tudo que precisa) */
-#include "transactions.c"
+#include "transactions.h"
 
 static struct tm now_tm(void)
 {
