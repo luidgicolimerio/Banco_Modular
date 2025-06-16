@@ -3,8 +3,8 @@ int createSavingsAccount(long int CPF);
  * nome: createSavingsAccount
  *
  * acoplamento:
- *   param 1 — CPF: numero de CPF do cliente
- *   ret 1 — int: codigo de status (0 = sucesso, 1 = conta ja existe, -1 = erro de alocacao)
+ *   param 1 ï¿½ CPF: numero de CPF do cliente
+ *   ret 1 ï¿½ int: codigo de status (0 = sucesso, 1 = conta ja existe, -1 = erro de alocacao)
  *
  * condicoes de acoplamento:
  *   - CPF deve ser valido e nao pode existir previamente na arvore de contas poupanca
@@ -32,8 +32,8 @@ int createCheckingAccount(long int CPF);
  * nome: createCheckingAccount
  *
  * acoplamento:
- *   param 1 — CPF: numero de CPF do cliente
- *   ret 1 — int: codigo de status (0 = sucesso, 1 = conta ja existe, -1 = erro de alocacao)
+ *   param 1 ï¿½ CPF: numero de CPF do cliente
+ *   ret 1 ï¿½ int: codigo de status (0 = sucesso, 1 = conta ja existe, -1 = erro de alocacao)
  *
  * condicoes de acoplamento:
  *   - CPF deve ser valido e unico na arvore de contas correntes

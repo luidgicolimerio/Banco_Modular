@@ -3,56 +3,56 @@ int updateCheckingAccountBal(long int CPF, double val);
  * nome: updateCheckingAccountBal
  *
  * acoplamento:
- *   param 1 — CPF: número de CPF do cliente
- *   param 2 — val: valor a ser somado ou subtraído do saldo
- *   ret 1 — int: código de status (0 = sucesso, 1 = saldo insuficiente, 2 = CPF não encontrado)
+ *   param 1 ï¿½ CPF: nï¿½mero de CPF do cliente
+ *   param 2 ï¿½ val: valor a ser somado ou subtraï¿½do do saldo
+ *   ret 1 ï¿½ int: cï¿½digo de status (0 = sucesso, 1 = saldo insuficiente, 2 = CPF nï¿½o encontrado)
  *
- * condições de acoplamento:
- *   - CPF deve estar presente na árvore de contas correntes
- *   - Saldo não pode ficar negativo
+ * condiï¿½ï¿½es de acoplamento:
+ *   - CPF deve estar presente na ï¿½rvore de contas correntes
+ *   - Saldo nï¿½o pode ficar negativo
  *
- * descrição:
- *   Atualiza o saldo da conta corrente identificada por CPF, se existir e se a operação for válida.
+ * descriï¿½ï¿½o:
+ *   Atualiza o saldo da conta corrente identificada por CPF, se existir e se a operaï¿½ï¿½o for vï¿½lida.
  *
- * hipóteses:
- *   - A árvore de contas correntes foi corretamente inicializada
- *   - O CPF é válido e único
+ * hipï¿½teses:
+ *   - A ï¿½rvore de contas correntes foi corretamente inicializada
+ *   - O CPF ï¿½ vï¿½lido e ï¿½nico
  *
- * restrições:
- *   - Não permite saldo negativo
- *   - A árvore está acessível pela variável global checkingRoot
+ * restriï¿½ï¿½es:
+ *   - Nï¿½o permite saldo negativo
+ *   - A ï¿½rvore estï¿½ acessï¿½vel pela variï¿½vel global checkingRoot
  *
- * pseudo instruções:
- *   // Busca o CPF na árvore de contas correntes
- *   // Se não encontrado, retorna 2
- *   // Se a operação deixaria o saldo negativo, retorna 1
- *   // Caso contrário, aplica a variação ao saldo e retorna 0
+ * pseudo instruï¿½ï¿½es:
+ *   // Busca o CPF na ï¿½rvore de contas correntes
+ *   // Se nï¿½o encontrado, retorna 2
+ *   // Se a operaï¿½ï¿½o deixaria o saldo negativo, retorna 1
+ *   // Caso contrï¿½rio, aplica a variaï¿½ï¿½o ao saldo e retorna 0
  */
 int updateSavingsAccountBal(long int CPF, double val);
 /*
  * nome: updateSavingsAccountBal
  *
  * acoplamento:
- *   param 1 — CPF: número do CPF do cliente
- *   param 2 — val: valor a aplicar no saldo
- *   ret 1 — int: código de status (0 = sucesso, 1 = saldo insuficiente, 2 = CPF não encontrado)
+ *   param 1 ï¿½ CPF: nï¿½mero do CPF do cliente
+ *   param 2 ï¿½ val: valor a aplicar no saldo
+ *   ret 1 ï¿½ int: cï¿½digo de status (0 = sucesso, 1 = saldo insuficiente, 2 = CPF nï¿½o encontrado)
  *
- * condições de acoplamento:
- *   - CPF deve estar presente na árvore de contas poupança
- *   - Saldo não pode ficar negativo após a operação
+ * condiï¿½ï¿½es de acoplamento:
+ *   - CPF deve estar presente na ï¿½rvore de contas poupanï¿½a
+ *   - Saldo nï¿½o pode ficar negativo apï¿½s a operaï¿½ï¿½o
  *
- * descrição:
- *   Atualiza o saldo da conta poupança identificada por CPF com o valor especificado.
+ * descriï¿½ï¿½o:
+ *   Atualiza o saldo da conta poupanï¿½a identificada por CPF com o valor especificado.
  *
- * hipóteses:
- *   - A árvore AVL de contas poupança está corretamente construída
+ * hipï¿½teses:
+ *   - A ï¿½rvore AVL de contas poupanï¿½a estï¿½ corretamente construï¿½da
  *
- * restrições:
- *   - Não permite saldo negativo
+ * restriï¿½ï¿½es:
+ *   - Nï¿½o permite saldo negativo
  *
- * pseudo instruções:
- *   // Busca o CPF na árvore de contas poupança
- *   // Se não encontrado, retorna 2
- *   // Se a operação deixaria o saldo negativo, retorna 1
- *   // Caso contrário, aplica o valor ao saldo e retorna 0
+ * pseudo instruï¿½ï¿½es:
+ *   // Busca o CPF na ï¿½rvore de contas poupanï¿½a
+ *   // Se nï¿½o encontrado, retorna 2
+ *   // Se a operaï¿½ï¿½o deixaria o saldo negativo, retorna 1
+ *   // Caso contrï¿½rio, aplica o valor ao saldo e retorna 0
  */

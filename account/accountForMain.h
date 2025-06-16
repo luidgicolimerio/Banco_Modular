@@ -4,10 +4,10 @@ int getBalanceByType(long int CPF, double* balance, const char* type);
  * nome: getBalanceByType
  *
  * acoplamento:
- *   param 1 — CPF: CPF do cliente
- *   param 2 — balance: ponteiro para double que recebera o saldo
- *   param 3 — type: tipo da conta ("checking" ou "savings")
- *   ret 1 — int: codigo de status (0 = sucesso, 1 = CPF nao encontrado, 2 = ponteiro nulo, 3 = tipo invalido)
+ *   param 1 ï¿½ CPF: CPF do cliente
+ *   param 2 ï¿½ balance: ponteiro para double que recebera o saldo
+ *   param 3 ï¿½ type: tipo da conta ("checking" ou "savings")
+ *   ret 1 ï¿½ int: codigo de status (0 = sucesso, 1 = CPF nao encontrado, 2 = ponteiro nulo, 3 = tipo invalido)
  *
  * condicoes de acoplamento:
  *   - balance != NULL
@@ -35,8 +35,8 @@ int saveSavingsAccounts(FILE* file);
  * nome: saveCheckingAccounts
  *
  * acoplamento:
- *   param 1 — file: ponteiro de arquivo em modo escrita
- *   ret 1 — int: codigo de status (0 = sucesso, 1 = ponteiro invalido)
+ *   param 1 ï¿½ file: ponteiro de arquivo em modo escrita
+ *   ret 1 ï¿½ int: codigo de status (0 = sucesso, 1 = ponteiro invalido)
  *
  * condicoes de acoplamento:
  *   - file deve estar aberto e nao ser NULL
@@ -60,8 +60,8 @@ int saveCheckingAccounts(FILE* file);
  * nome: saveSavingsAccounts
  *
  * acoplamento:
- *   param 1 — file: ponteiro de arquivo em modo escrita
- *   ret 1 — int: codigo de status (0 = sucesso, 1 = ponteiro invalido)
+ *   param 1 ï¿½ file: ponteiro de arquivo em modo escrita
+ *   ret 1 ï¿½ int: codigo de status (0 = sucesso, 1 = ponteiro invalido)
  *
  * condicoes de acoplamento:
  *   - file deve estar aberto e nao ser NULL
@@ -85,8 +85,8 @@ int readCheckingAccounts(FILE* file);
  * nome: readCheckingAccounts
  *
  * acoplamento:
- *   param 1 — file: ponteiro de arquivo em modo leitura
- *   ret 1 — int: codigo de status (0 = sucesso, 1 = ponteiro invalido)
+ *   param 1 ï¿½ file: ponteiro de arquivo em modo leitura
+ *   ret 1 ï¿½ int: codigo de status (0 = sucesso, 1 = ponteiro invalido)
  *
  * condicoes de acoplamento:
  *   - file deve estar aberto e nao ser NULL
@@ -111,8 +111,8 @@ int readSavingsAccounts(FILE* file);
  * nome: readSavingsAccounts
  *
  * acoplamento:
- *   param 1 — file: ponteiro de arquivo em modo leitura
- *   ret 1 — int: codigo de status (0 = sucesso, 1 = ponteiro invalido)
+ *   param 1 ï¿½ file: ponteiro de arquivo em modo leitura
+ *   ret 1 ï¿½ int: codigo de status (0 = sucesso, 1 = ponteiro invalido)
  *
  * condicoes de acoplamento:
  *   - file deve estar aberto e nao ser NULL
