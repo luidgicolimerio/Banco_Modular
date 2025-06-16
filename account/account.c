@@ -174,35 +174,6 @@ static checkingAccountTree* findChecking(checkingAccountTree* root, long int CPF
 }
 
 int createSavingsAccount(long int CPF) {
-
-     /*
-     * nome: createSavingsAccount
-     *
-     * acoplamento:
-     *   param 1 — CPF: número de CPF do cliente
-     *   ret 1 — int: código de status (0 = sucesso, 1 = conta já existe, -1 = erro de alocação)
-     *
-     * condições de acoplamento:
-     *   - CPF deve ser válido e não pode existir previamente na árvore de contas poupança
-     *
-     * descrição:
-     *   Cria uma nova conta poupança com saldo 0 e juros 0 para o CPF fornecido e insere na árvore AVL.
-     *
-     * hipóteses:
-     *   - A estrutura da árvore AVL está válida
-     *
-     * restrições:
-     *   - A conta não pode ser duplicada
-     *   - O CPF deve ser único na árvore
-     *
-     * pseudo instruções:
-     *   // Verifica se o CPF já existe
-     *   // Se sim, retorna 1
-     *   // Aloca nova struct
-     *   // Insere na árvore e retorna 0
-     *   // Em caso de falha de alocação, retorna -1
-     */
-
     if (findSavings(savingsRoot, CPF)) return 1;
     savingsAccount* acc = malloc(sizeof(savingsAccount));
     if (!acc) return -1;
@@ -215,32 +186,6 @@ int createSavingsAccount(long int CPF) {
 
 int createCheckingAccount(long int CPF) {
 
-    /*
-     * nome: createCheckingAccount
-     *
-     * acoplamento:
-     *   param 1 — CPF: número de CPF do cliente
-     *   ret 1 — int: código de status (0 = sucesso, 1 = conta já existe, -1 = erro de alocação)
-     *
-     * condições de acoplamento:
-     *   - CPF deve ser válido e único na árvore de contas correntes
-     *
-     * descrição:
-     *   Cria uma nova conta corrente com saldo 0 para o CPF especificado e insere na árvore AVL.
-     *
-     * hipóteses:
-     *   - A árvore AVL está funcionando corretamente
-     *
-     * restrições:
-     *   - O CPF não pode estar duplicado
-     *
-     * pseudo instruções:
-     *   // Verifica se o CPF já existe
-     *   // Se sim, retorna 1
-     *   // Aloca struct da conta corrente
-     *   // Insere na árvore e retorna 0
-     *   // Se malloc falhar, retorna -1
-     */
 
     if (findChecking(checkingRoot, CPF)) return 1;
     checkingAccount* acc = malloc(sizeof(checkingAccount));
@@ -252,36 +197,7 @@ int createCheckingAccount(long int CPF) {
 }
 
 int updateCheckingAccountBal(long int CPF, double val) {
-    /*
-     * nome: updateCheckingAccountBal
-     *
-     * acoplamento:
-     *   param 1 — CPF: número de CPF do cliente
-     *   param 2 — val: valor a ser somado ou subtraído do saldo
-     *   ret 1 — int: código de status (0 = sucesso, 1 = saldo insuficiente, 2 = CPF não encontrado)
-     *
-     * condições de acoplamento:
-     *   - CPF deve estar presente na árvore de contas correntes
-     *   - Saldo não pode ficar negativo
-     *
-     * descrição:
-     *   Atualiza o saldo da conta corrente identificada por CPF, se existir e se a operação for válida.
-     *
-     * hipóteses:
-     *   - A árvore de contas correntes foi corretamente inicializada
-     *   - O CPF é válido e único
-     *
-     * restrições:
-     *   - Não permite saldo negativo
-     *   - A árvore está acessível pela variável global checkingRoot
-     *
-     * pseudo instruções:
-     *   // Busca o CPF na árvore de contas correntes
-     *   // Se não encontrado, retorna 2
-     *   // Se a operação deixaria o saldo negativo, retorna 1
-     *   // Caso contrário, aplica a variação ao saldo e retorna 0
-     */
-
+   
     checkingAccountTree* node = findChecking(checkingRoot, CPF);
     if (!node) return 2;
     if (node->account->balance + val < 0) return 1;
@@ -290,33 +206,6 @@ int updateCheckingAccountBal(long int CPF, double val) {
 }
 
 int updateSavingsAccountBal(long int CPF, double val) {
-    /*
-     * nome: updateSavingsAccountBal
-     *
-     * acoplamento:
-     *   param 1 — CPF: número do CPF do cliente
-     *   param 2 — val: valor a aplicar no saldo
-     *   ret 1 — int: código de status (0 = sucesso, 1 = saldo insuficiente, 2 = CPF não encontrado)
-     *
-     * condições de acoplamento:
-     *   - CPF deve estar presente na árvore de contas poupança
-     *   - Saldo não pode ficar negativo após a operação
-     *
-     * descrição:
-     *   Atualiza o saldo da conta poupança identificada por CPF com o valor especificado.
-     *
-     * hipóteses:
-     *   - A árvore AVL de contas poupança está corretamente construída
-     *
-     * restrições:
-     *   - Não permite saldo negativo
-     *
-     * pseudo instruções:
-     *   // Busca o CPF na árvore de contas poupança
-     *   // Se não encontrado, retorna 2
-     *   // Se a operação deixaria o saldo negativo, retorna 1
-     *   // Caso contrário, aplica o valor ao saldo e retorna 0
-     */
 
     savingsAccountTree* node = findSavings(savingsRoot, CPF);
     if (!node) return 2;
@@ -326,36 +215,6 @@ int updateSavingsAccountBal(long int CPF, double val) {
 }
 
 int getBalanceByType(long int CPF, double* balance, const char* type) {
-    /*
-     * nome: getBalanceByType
-     *
-     * acoplamento:
-     *   param 1 — CPF: CPF do cliente
-     *   param 2 — balance: ponteiro para double que receberá o saldo
-     *   param 3 — type: tipo da conta ("checking" ou "savings")
-     *   ret 1 — int: código de status (0 = sucesso, 1 = CPF não encontrado, 2 = ponteiro nulo, 3 = tipo inválido)
-     *
-     * condições de acoplamento:
-     *   - balance != NULL
-     *   - type != NULL
-     *   - type deve ser "checking" ou "savings"
-     *
-     * descrição:
-     *   Retorna o saldo da conta do tipo especificado associada ao CPF fornecido.
-     *
-     * hipóteses:
-     *   - As árvores de contas estão preenchidas corretamente
-     *
-     * restrições:
-     *   - Tipos diferentes de "checking" e "savings" não são aceitos
-     *
-     * pseudo instruções:
-     *   // Verifica se balance e type são válidos
-     *   // Seleciona a árvore correta com base em type
-     *   // Busca o CPF na árvore
-     *   // Se não encontrado, retorna 1
-     *   // Se encontrado, armazena saldo em *balance e retorna 0
-     */
 
     if (!balance || !type) return 2;  // Invalid pointer
 
@@ -390,91 +249,21 @@ static void saveSavingsTree(savingsAccountTree* node, FILE* file) {
 }
 
 int saveCheckingAccounts(FILE* file) {
-    /*
-     * nome: saveCheckingAccounts
-     *
-     * acoplamento:
-     *   param 1 — file: ponteiro de arquivo em modo escrita
-     *   ret 1 — int: código de status (0 = sucesso, 1 = ponteiro inválido)
-     *
-     * condições de acoplamento:
-     *   - file deve estar aberto e não ser NULL
-     *
-     * descrição:
-     *   Percorre a árvore AVL de contas correntes e grava os dados em um arquivo texto.
-     *
-     * hipóteses:
-     *   - A árvore AVL de contas correntes está corretamente montada
-     *
-     * restrições:
-     *   - Os dados são salvos como: CPF saldo
-     *
-     * pseudo instruções:
-     *   // Se file for NULL, retorna 1
-     *   // Percorre a árvore AVL e grava: CPF saldo
-     *   // Retorna 0 após concluir
-     */
+
     if (!file) return 1;
     saveCheckingTree(checkingRoot, file);
     return 0;
 }
 
 int saveSavingsAccounts(FILE* file) {
-    /*
-     * nome: saveSavingsAccounts
-     *
-     * acoplamento:
-     *   param 1 — file: ponteiro de arquivo em modo escrita
-     *   ret 1 — int: código de status (0 = sucesso, 1 = ponteiro inválido)
-     *
-     * condições de acoplamento:
-     *   - file deve estar aberto e não ser NULL
-     *
-     * descrição:
-     *   Percorre a árvore AVL de contas poupança e grava os dados em um arquivo.
-     *
-     * hipóteses:
-     *   - A árvore de contas está completa e acessível
-     *
-     * restrições:
-     *   - Cada linha do arquivo terá: CPF saldo juros
-     *
-     * pseudo instruções:
-     *   // Se file for NULL, retorna 1
-     *   // Percorre a árvore AVL e grava os campos das contas poupança
-     *   // Retorna 0 ao finalizar
-     */
+
     if (!file) return 1;
     saveSavingsTree(savingsRoot, file);
     return 0;
 }
 
 int readCheckingAccounts(FILE* file) {
-    /*
-     * nome: readCheckingAccounts
-     *
-     * acoplamento:
-     *   param 1 — file: ponteiro de arquivo em modo leitura
-     *   ret 1 — int: código de status (0 = sucesso, 1 = ponteiro inválido)
-     *
-     * condições de acoplamento:
-     *   - file deve estar aberto e não ser NULL
-     *
-     * descrição:
-     *   Lê o arquivo contendo contas correntes e reconstroi a árvore AVL com os dados.
-     *
-     * hipóteses:
-     *   - Cada linha do arquivo está no formato: CPF saldo
-     *
-     * restrições:
-     *   - CPF deve ser único
-     *   - Saldo deve ser um número válido
-     *
-     * pseudo instruções:
-     *   // Enquanto conseguir ler CPF e saldo
-     *   // Cria struct de conta, insere na árvore AVL
-     *   // Retorna 0 ao final
-     */
+
     if (!file) return 1;
     long int cpf; double bal;
     while (fscanf(file, "%ld %lf", &cpf, &bal) == 2) {
@@ -488,31 +277,7 @@ int readCheckingAccounts(FILE* file) {
 }
 
 int readSavingsAccounts(FILE* file) {
-    /*
-     * nome: readSavingsAccounts
-     *
-     * acoplamento:
-     *   param 1 — file: ponteiro de arquivo em modo leitura
-     *   ret 1 — int: código de status (0 = sucesso, 1 = ponteiro inválido)
-     *
-     * condições de acoplamento:
-     *   - file deve estar aberto e não ser NULL
-     *
-     * descrição:
-     *   Lê as contas poupança de um arquivo e insere cada uma na árvore AVL.
-     *
-     * hipóteses:
-     *   - Cada linha do arquivo tem 3 valores válidos: CPF saldo juros
-     *
-     * restrições:
-     *   - CPF deve ser único
-     *   - Os valores devem estar no formato correto
-     *
-     * pseudo instruções:
-     *   // Lê CPF, saldo, taxa de juros de cada linha
-     *   // Aloca struct, insere na árvore
-     *   // Retorna 0 ao fim da leitura
-     */
+
     if (!file) return 1;
     long int cpf; double bal, rate;
     while (fscanf(file, "%ld %lf %lf", &cpf, &bal, &rate) == 3) {
