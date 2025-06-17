@@ -60,7 +60,7 @@ int login(long int CPF, char* password);
     - A árvore `loginRoot` já foi inicializada previamente com logins válidos.
     - A senha passada é segura e terminada por `\0`.
     - A função `findLogin` retorna um ponteiro válido ou `NULL`.
-    
+
 -->Restrições: 
     - O sistema só permite um login ativo por vez (armazenado em `currentLogin`).
     - Não há tratamento para múltiplos logins simultâneos.
@@ -353,14 +353,6 @@ int readLogins(FILE* file, LoginTree** root);
     - O campo de senha é limitado a 199 caracteres.
     - O arquivo deve conter dados válidos no formato esperado ou as linhas serão ignoradas.
     - O programa deve ter permissão para alocar memória.
-
--->Pseudoinstruções:
-    - Verifica se os ponteiros são válidos.
-    - Lê cada linha do arquivo.
-    - Usa `sscanf` para extrair os campos `CPF` e `senha`.
-    - Ignora linhas mal formatadas.
-    - Aloca memória e duplica os dados.
-    - Insere o novo login na árvore.
 */
 //*****************************************************************************************************************
 
