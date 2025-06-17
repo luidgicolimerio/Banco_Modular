@@ -17,16 +17,15 @@ Login* currentLogin = NULL; //Aponta para o login atual autenticado
 Login* findLogin(LoginTree* root, long int CPF) {
     if (root == NULL) return NULL;
 
-    // Verifica o nó atual
-    if (root->loginData != NULL && root->loginData->currentCPF == CPF)
-        return root->loginData;
+    long int currentCPF = root->loginData->currentCPF;
 
-    // Busca na subárvore esquerda
-    Login* result = findLogin(root->left, CPF);
-    if (result != NULL) return result;
-
-    // Busca na subárvore direita
-    return findLogin(root->right, CPF);
+    if (CPF == currentCPF) {
+        return root->loginData; // CPF encontrado
+    } else if (CPF < currentCPF) {
+        return findLogin(root->left, CPF); // busca na subárvore esquerda
+    } else {
+        return findLogin(root->right, CPF); // busca na subárvore direita
+    }
 }
 
 //Garante que tem de 10 ou 11 digitos e que é tudo numero
@@ -39,12 +38,9 @@ int isValidPhone(char* number) {
     return 1;
 }
 
-//Adiciona login na arvore
+// Insere login na árvore binária de busca (ordem crescente de CPF)
 int addLoginToTree(LoginTree** root, Login* newLogin) {
     if (newLogin == NULL) return -1;
-
-    // Verificação global de duplicação antes de inserir
-    if (findLogin(*root, newLogin->currentCPF) != NULL) return 1;
 
     if (*root == NULL) {
         *root = (LoginTree*) malloc(sizeof(LoginTree));
@@ -53,13 +49,19 @@ int addLoginToTree(LoginTree** root, Login* newLogin) {
         (*root)->loginData = newLogin;
         (*root)->left = NULL;
         (*root)->right = NULL;
-        return 0; 
+        return 0;
     }
 
-    int result = addLoginToTree(&(*root)->left, newLogin);
-    if (result == 0) return 0;
+    long int currentCPF = (*root)->loginData->currentCPF;
+    long int newCPF = newLogin->currentCPF;
 
-    return addLoginToTree(&(*root)->right, newLogin);
+    if (newCPF < currentCPF) {
+        return addLoginToTree(&((*root)->left), newLogin);
+    } else if (newCPF > currentCPF) {
+        return addLoginToTree(&((*root)->right), newLogin);
+    } else {
+        return 1; // CPF já existe
+    }
 }
 
 //**********************************************************************************************************
