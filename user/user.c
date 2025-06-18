@@ -5,9 +5,21 @@
 #include <ctype.h>
 #include <time.h>
 
+// Estruturas completas declaradas em user_internal.h
+#include "user_internal.h"
+
+// Fun√ß√£o utilit√°ria para duplicar strings (evita warnings de strdup)
+static char* duplicateString(const char* src) {
+	if (!src) return NULL;
+	size_t len = strlen(src) + 1;
+	char* dst = malloc(len);
+	if (dst) memcpy(dst, src, len);
+	return dst;
+}
+
 static userProfileTree* raiz = NULL;
 
-/* FunÁıes auxiliares static */
+/* Fun√ß√µes auxiliares static */
 static int validaNome(const char* nome);
 static int validaCPF(long long cpf);
 static int cpfUnico(long long cpf, userProfileTree* no);
@@ -44,11 +56,11 @@ int createUserProfile(char* name, char* numeroTel, char* birthdate, long long CP
 	if (perfil == NULL)
 		return -1;
 
-	perfil->name = strdup(name);
-	perfil->birthdate = strdup(birthdate);
+	perfil->name = duplicateString(name);
+	perfil->birthdate = duplicateString(birthdate);
 	perfil->CPF = CPF;
-	perfil->password = strdup(password);
-	perfil->telNum = strdup(numeroTel);
+	perfil->password = duplicateString(password);
+	perfil->telNum = duplicateString(numeroTel);
 
 	int retorno = addProfileToTree(perfil);
 	if (retorno != 0)
@@ -66,7 +78,7 @@ int createUserProfile(char* name, char* numeroTel, char* birthdate, long long CP
 
 int addProfileToTree(userProfile* profile)
 {
-	int retorno = 0; // Para poder retornar os casos de erro essa vari·vel È passada como ponteiro para a funÁ„o atribuir o valor do retorno
+	int retorno = 0; // Para poder retornar os casos de erro essa vari√°vel √© passada como ponteiro para a fun√ß√£o atribuir o valor do retorno
 	raiz = insereAVL(raiz, profile, &retorno);
 	return retorno;
 }
@@ -75,6 +87,11 @@ int getUser(long long CPF, userProfileTree* no)
 {
 	if (!validaCPF(CPF))
 		return 1;
+
+	if (no == NULL) {
+		no = raiz; // Usa a raiz global se n√£o for fornecida
+	}
+
 	if (buscaPtr(CPF, no) != NULL)
 		return 0;
 	else
@@ -103,7 +120,7 @@ int alterPassword(long long CPF, const char* newPass)
 		return 1;
 
 	free(perfil->password);
-	perfil->password = strdup(newPass);
+	perfil->password = duplicateString(newPass);
 	return 0;
 }
 
@@ -117,7 +134,7 @@ int alterNumber(long long CPF, const char* numero)
 		return 1;
 
 	free(perfil->telNum);
-	perfil->telNum = strdup(numero);
+	perfil->telNum = duplicateString(numero);
 	return 0;
 }
 
@@ -211,7 +228,7 @@ int readUserProfiles(FILE* arquivo)
 
 	while (leNo(arquivo))
 	{
-		// Para continuar atÈ o fim do arquivo
+		// Para continuar at√© o fim do arquivo
 	}
 	return 0;
 }
@@ -395,7 +412,7 @@ static userProfileTree* insereAVL(userProfileTree* no, userProfile* perfil, int*
 	else
 		no->right = insereAVL(no->right, perfil, retorno);
 	if (*retorno != 0)
-		return no; // Teve algum erro dentro da recurs„o
+		return no; // Teve algum erro dentro da recurs√£o
 
 	int fator = nbalanceamento(no);
 
@@ -414,5 +431,5 @@ static userProfileTree* insereAVL(userProfileTree* no, userProfile* perfil, int*
 		no->right = rotacaoDir(no->right);
 		return rotacaoEsq(no);
 	}
-	return no; // Se j· estiver balanceado
+	return no; // Se j√° estiver balanceado
 }

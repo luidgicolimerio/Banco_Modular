@@ -1,100 +1,96 @@
 #include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include "user.h"
+
+#define OK 0
+
+/* C√≥digos de retorno conforme user_test.txt */
+#define NAME_INVALID 1
+#define CPF_DUPLICATE 2
+#define CPF_INVALID 3
+#define GETCPF_INVALID 1
+#define DATE_INVALID 4
+#define UNDERAGE 5
+#define SHORT_PASS 6
+#define PHONE_INVALID 7
+#define ERR_ALLOC -1
+
+#define USER_NOT_FOUND 1
+#define PASS_TOO_SHORT 2
+#define NUMBER_INVALID 2
 
 #define CPF1 12345654321LL
 #define CPF2 22222222222LL
 
+static void test_createUserProfile(void)
+{
+	assert(createUserProfile("", "21999999999", "01/01/2000", CPF1, "12345678") == NAME_INVALID);
+	assert(createUserProfile("Pessoa", "21999999999", "01/01/2000", 123L, "12345678") == CPF_INVALID);
+	assert(createUserProfile("Pessoa", "21999999999", "a0/01/2000", CPF1, "12345678") == DATE_INVALID);
+	assert(createUserProfile("Pessoa", "21999999999", "01/01/2020", CPF1, "12345678") == UNDERAGE);
+	assert(createUserProfile("Pessoa", "21999999999", "01/01/2000", CPF1, "1234567") == SHORT_PASS);
+	assert(createUserProfile("Pessoa", "12345", "01/01/2000", CPF1, "12345678") == PHONE_INVALID);
+	assert(createUserProfile("Pessoa", "21999999999", "01/01/2000", CPF1, "12345678") == OK);
+	assert(createUserProfile("Pessoa", "21999999999", "01/01/2000", CPF1, "12345678") == CPF_DUPLICATE);
+	printf("[OK] createUserProfile\n");
+}
+
+static void test_getUser(void)
+{
+	/* sucesso (j√° criado antes) */
+	assert(getUser(CPF1, NULL) == OK);
+	/* CPF inv√°lido */
+	assert(getUser(123L, NULL) == GETCPF_INVALID);
+	/* n√£o encontrado */
+	assert(getUser(CPF2, NULL) == 2);
+	printf("[OK] getUser\n");
+}
+
+static void test_alterPassword(void)
+{
+	/* usu√°rio inexistente */
+	assert(alterPassword(CPF2, "abc12345") == USER_NOT_FOUND);
+	/* nova senha curta */
+	assert(alterPassword(CPF1, "1234567") == PASS_TOO_SHORT);
+	/* sucesso */
+	assert(alterPassword(CPF1, "senhaNova123") == OK);
+	printf("[OK] alterPassword\n");
+}
+
+static void test_alterNumber(void)
+{
+	/* usu√°rio inexistente */
+	assert(alterNumber(CPF2, "21987654321") == USER_NOT_FOUND);
+	/* n√∫mero inv√°lido */
+	assert(alterNumber(CPF1, "1234") == NUMBER_INVALID);
+	/* sucesso */
+	assert(alterNumber(CPF1, "21987654321") == OK);
+	printf("[OK] alterNumber\n");
+}
+
+static void test_save_read(void)
+{
+	assert(saveUserProfiles(NULL) == 1);
+	assert(readUserProfiles(NULL) == 1);
+
+	FILE* f = fopen("user_test.bin", "wb");
+	assert(f && saveUserProfiles(f) == OK);
+	fclose(f);
+
+	f = fopen("user_test.bin", "rb");
+	assert(f && readUserProfiles(f) == OK);
+	fclose(f);
+	printf("[OK] saveUserProfiles / readUserProfiles\n");
+}
+
 int main(void)
 {
-	/* 2.1 createUserProfile */
-
-	// Nome inv·lido
-	assert(createUserProfile("", "21999999999", "01/01/2000", CPF1, "12345678") == 1);
-	// CPF inv·lido
-	assert(createUserProfile("Pessoa", "21999999999", "01/01/2000", 123L, "12345678") == 3);
-	// Data de nascimento inv·lida
-	assert(createUserProfile("Pessoa", "21999999999", "a0/01/2000", CPF1, "12345678") == 4);
-	// Menor de idade
-	assert(createUserProfile("Pessoa", "21999999999", "01/01/2020", CPF1, "12345678") == 5);
-	// Senha curta
-	assert(createUserProfile("Pessoa", "21999999999", "01/01/2000", CPF1, "1234567") == 6);
-	// Telefone inv·lido
-	assert(createUserProfile("Pessoa", "12345", "01/01/2000", CPF1, "12345678") == 7);
-	// Sucesso
-	assert(createUserProfile("Pessoa", "21999999999", "01/01/2000", CPF1, "12345678") == 0);
-	// CPF j· existente
-	assert(createUserProfile("Pessoa", "21999999999", "01/01/2000", CPF1, "12345678") == 2);
-
-
-	/* 2.2 getUser */
-
-	userProfile teste = { "Teste", "01/01/2000", CPF2, "12345678", "21999999999" };
-	userProfileTree noTeste = { &teste, NULL, NULL };
-	// Sucesso
-	assert(getUser(CPF2, &noTeste) == 0);
-	// CPF inv·lido
-	assert(getUser(123L, &noTeste) == 1);
-	// N„o encontrado
-	assert(getUser(CPF1, &noTeste) == 2);
-
-
-	/* 2.3 alterPassword */
-
-	// CPF n„o encontrado
-	assert(alterPassword(CPF2, "senhaNova") == 1);
-	// Senha curta
-	assert(alterPassword(CPF1, "1234567") == 2);
-	// Sucesso
-	assert(alterPassword(CPF1, "senha12345") == 0);
-
-
-	/* 2.4 alterNumber */
-
-	// CPF n„o encontrado
-	assert(alterNumber(CPF2, "21987654321") == 1);
-	// N˙mero inv·lido
-	assert(alterNumber(CPF1, "1234") == 2);
-	// Sucesso
-	assert(alterNumber(CPF1, "21987654321") == 0);
-
-
-	/* 2.5 addProfileToTree */
-
-	userProfile* perfilTeste = malloc(sizeof(userProfile));
-	if (perfilTeste == NULL)
-	{
-		printf("Erro na alocaÁ„o de memoria para teste de addProfileToTree\n");
-		return 1;
-	}
-	perfilTeste->name = "Nome";
-	perfilTeste->birthdate = "01/01/1950";
-	// Perfil j· existe
-	perfilTeste->CPF = CPF1;
-	perfilTeste->password = "12345678";
-	perfilTeste->telNum = "21999999999";
-	assert(addProfileToTree(perfilTeste) == 1);
-	free(perfilTeste);
-
-
-	/* 2.6 saveUserProfiles e 2.7 readUserProfiles */
-
-	// Ponteiro inv·lido
-	assert(saveUserProfiles(NULL) == 1);
-	// Ponteiro inv·lido
-	assert(readUserProfiles(NULL) == 1);
-	// Sucesso
-	FILE* arq = fopen("arquivo.bin", "wb");
-	assert(arq != NULL);
-	assert(saveUserProfiles(arq) == 0);
-	fclose(arq);
-	// Sucesso
-	arq = fopen("arquivo.bin", "rb");
-	assert(arq != NULL);
-	assert(readUserProfiles(arq) == 0);
-	fclose(arq);
-
-	printf("Ok!\n");
+	printf("==== Testes USER ====""\n");
+	test_createUserProfile();
+	test_getUser();
+	test_alterPassword();
+	test_alterNumber();
+	test_save_read();
+	printf("\nTodos os testes USER conclu√≠dos com sucesso!\n");
 	return 0;
 }

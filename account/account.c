@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define max(a,b) (( (a) > (b) ) ? (a) : (b))
 
 // Struct definitions
 typedef struct savingsAccount {

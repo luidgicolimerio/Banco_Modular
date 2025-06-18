@@ -3,21 +3,8 @@
 
 #include <stdio.h>
 
-struct userProfile 
-{
-    char* name;
-    char* birthdate;
-    long long CPF;
-    char* password;
-    char* telNum;
-};
+// Encapsulated (opaque) structures. Campos internos são definidos apenas em user.c
 typedef struct userProfile userProfile;
-
-struct userProfileTree {
-    userProfile* profile;
-    struct userProfileTree* left;
-    struct userProfileTree* right;
-};
 typedef struct userProfileTree userProfileTree;
 
 /* 
@@ -30,7 +17,7 @@ param3 char* birthdate
 param4 long long CPF
 param5 char* password
 ret int
-Condições de acoplamento: CPF com 11 dígitos, senha ≥8 caracteres, data “DD/MM/AAAA”, se ret==0 a árvore contém o perfil
+Condições de acoplamento: CPF com 11 dígitos, senha ≥8 caracteres, data "DD/MM/AAAA", se ret==0 a árvore contém o perfil
 Descrição:
 0 =  Usuário criado com sucesso
 1 =  Nome inválido

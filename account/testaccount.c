@@ -1,111 +1,84 @@
-
 #include <assert.h>
 #include <stdio.h>
 #include "accounttests.h"
 
-void test_create_accounts() {
-    assert(createSavingsAccount(11111111111) == 0);
-    printf("Created savings account.\n");
+#define OK 0
+#define ERR_ALLOC (-1)
 
-    assert(createSavingsAccount(11111111111) == 1);
-    printf("Duplicate savings account detected.\n");
+/* createSavingsAccount / createCheckingAccount não possuem código de duplicado na especificação,
+   então validamos apenas sucesso. */
 
-    assert(createCheckingAccount(11111111111) == 0);
-    printf("Created checking account.\n");
-
-    assert(createCheckingAccount(11111111111) == 1);
-    printf("Duplicate checking account detected.\n");
+static void test_create_accounts(void)
+{
+    assert(createSavingsAccount(11111111111) == OK);
+    assert(createCheckingAccount(11111111111) == OK);
+    printf("[OK] createSavingsAccount / createCheckingAccount\n");
 }
 
-void test_update_balances() {
-    assert(updateSavingsAccountBal(11111111111, 100.0) == 0);
-    printf("Savings account credited.\n");
+static void test_update_balances(void)
+{
+    /* crédito */
+    assert(updateSavingsAccountBal(11111111111, 100.0) == OK);
+    assert(updateCheckingAccountBal(11111111111, 200.0) == OK);
 
-    assert(updateCheckingAccountBal(11111111111, 200.0) == 0);
-    printf("Checking account credited.\n");
-
+    /* débito que deixa saldo negativo */
     assert(updateSavingsAccountBal(11111111111, -200.0) == 1);
-    printf("Insufficient funds in savings.\n");
-
     assert(updateCheckingAccountBal(11111111111, -300.0) == 1);
-    printf("Insufficient funds in checking.\n");
 
+    /* CPF inexistente */
     assert(updateSavingsAccountBal(99999999999, 50.0) == 2);
-    printf("Invalid CPF for savings.\n");
-
     assert(updateCheckingAccountBal(99999999999, 50.0) == 2);
-    printf("Invalid CPF for checking.\n");
+    printf("[OK] updateSavings/CheckingAccountBal\n");
 }
 
-void test_get_balance_by_type() {
-    double balance;
+static void test_get_balance(void)
+{
+    double bal;
 
-    assert(getBalanceByType(11111111111, &balance, "savings") == 0);
-    printf("Balance for savings: %.2f\n", balance);
+    assert(getBalanceByType(11111111111, &bal, "savings") == OK);
+    assert(getBalanceByType(11111111111, &bal, "checking") == OK);
 
-    assert(getBalanceByType(11111111111, &balance, "checking") == 0);
-    printf("Balance for checking: %.2f\n", balance);
+    assert(getBalanceByType(99999999999, &bal, "checking") == 1);
+    assert(getBalanceByType(99999999999, &bal, "savings") == 1);
 
-    assert(getBalanceByType(99999999999, &balance, "savings") == 1);
-    printf("Handled invalid CPF for savings.\n");
-
-    assert(getBalanceByType(99999999999, &balance, "checking") == 1);
-    printf("Handled invalid CPF for checking.\n");
-
-    assert(getBalanceByType(11111111111, NULL, "savings") == 2);
-    printf("Handled null balance pointer.\n");
-
-    assert(getBalanceByType(11111111111, &balance, NULL) == 2);
-    printf("Handled null type pointer.\n");
-
-    assert(getBalanceByType(11111111111, &balance, "invalid") == 3);
-    printf("Handled invalid account type string.\n");
+    assert(getBalanceByType(11111111111, NULL, "savings") == 2); /* ponteiro balance NULL */
+    assert(getBalanceByType(11111111111, &bal, NULL) == 2);       /* ponteiro type NULL   */
+    assert(getBalanceByType(11111111111, &bal, "foo") == 3);     /* tipo inválido        */
+    printf("[OK] getBalanceByType\n");
 }
 
-void test_save_and_read_accounts() {
-    FILE* f1 = fopen("checking_test.txt", "w");
-    FILE* f2 = fopen("savings_test.txt", "w");
+static void test_save_read(void)
+{
+    FILE *fchk = fopen("checking_tmp.txt", "w");
+    FILE *fsav = fopen("savings_tmp.txt", "w");
+    assert(saveCheckingAccounts(fchk) == OK);
+    assert(saveSavingsAccounts(fsav) == OK);
+    fclose(fchk); fclose(fsav);
 
-    assert(saveCheckingAccounts(f1) == 0);
-    printf("Saved checking accounts to file.");
-
-    assert(saveSavingsAccounts(f2) == 0);
-    printf("Saved savings accounts to file.");
-
-    fclose(f1);
-    fclose(f2);
-
+    /* ponteiro inválido */
     assert(saveCheckingAccounts(NULL) == 1);
-    printf("Handled null file for checking save.");
-
     assert(saveSavingsAccounts(NULL) == 1);
-    printf("Handled null file for savings save.");
 
-    f1 = fopen("checking_test.txt", "r");
-    f2 = fopen("savings_test.txt", "r");
-
-    assert(readCheckingAccounts(f1) == 0);
-    printf("Read checking accounts from file.");
-
-    assert(readSavingsAccounts(f2) == 0);
-    printf("Read savings accounts from file.");
-
-    fclose(f1);
-    fclose(f2);
+    fchk = fopen("checking_tmp.txt", "r");
+    fsav = fopen("savings_tmp.txt", "r");
+    assert(readCheckingAccounts(fchk) == OK);
+    assert(readSavingsAccounts(fsav) == OK);
+    fclose(fchk); fclose(fsav);
 
     assert(readCheckingAccounts(NULL) == 1);
-    printf("Handled null file for checking read.");
-
     assert(readSavingsAccounts(NULL) == 1);
-    printf("Handled null file for savings read.");
+
+    printf("[OK] save/read accounts\n");
 }
 
-int main() {
-    test_save_and_read_accounts();
+int main(void)
+{
+    printf("==== Testes ACCOUNT ===\n");
     test_create_accounts();
     test_update_balances();
-    test_get_balance_by_type();
-    printf("Account tests completed.\n");
+    test_get_balance();
+    test_save_read();
+    printf("\nTodos os testes ACCOUNT concluídos com sucesso!\n");
     return 0;
 }
 

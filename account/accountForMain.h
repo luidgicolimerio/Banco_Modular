@@ -132,3 +132,7 @@ int readSavingsAccounts(FILE* file);
  *   // Aloca struct, insere na arvore
  *   // Retorna 0 ao fim da leitura
  */
+int createSavingsAccount(long int CPF);
+int createCheckingAccount(long int CPF);
+int updateCheckingAccountBal(long int CPF, double val);
+int updateSavingsAccountBal(long int CPF, double val);

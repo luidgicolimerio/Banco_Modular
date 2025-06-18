@@ -6,9 +6,24 @@
 #include <string.h> 
 #include <ctype.h>
 
-//Definição das variaveis globais 
-LoginTree* loginRoot = NULL; //Aponta para o header da árvore que tem todos os logins
-Login* currentLogin = NULL; //Aponta para o login atual autenticado
+// -----------------------------------------------------------------------------------------------------------------
+// Estruturas internas (definicoes completas aqui para manter encapsulamento).
+// Apenas os ponteiros sao expostos no header.
+typedef struct login {
+    long int currentCPF;
+    char*    currentPassword;
+} Login;
+
+typedef struct loginTree {
+    Login*              loginData;
+    struct loginTree*   left;
+    struct loginTree*   right;
+} LoginTree;
+
+// -----------------------------------------------------------------------------------------------------------------
+// Variáveis globais
+LoginTree* loginRoot = NULL; // raiz da árvore de logins
+Login*    currentLogin = NULL; // ponteiro para o login atualmente autenticado
 
 //**********************************************************************************************************
 //Funções internas
@@ -64,6 +79,17 @@ int addLoginToTree(LoginTree** root, Login* newLogin) {
     }
 }
 
+// Função utilitária local para duplicar strings (substitui strdup para manter portabilidade e evitar avisos)
+static char* duplicateString(const char* source) {
+    if (source == NULL) return NULL;
+    size_t len = strlen(source) + 1;
+    char* dest = (char*)malloc(len);
+    if (dest) {
+        memcpy(dest, source, len);
+    }
+    return dest;
+}
+
 //**********************************************************************************************************
 // Funções externas
 
@@ -106,7 +132,7 @@ int registerUser(char* name, char* numeroTel, char* birthdate, long int CPF, cha
     
     // Preenche os dados do login
     novoLogin->currentCPF = CPF;
-    novoLogin->currentPassword = strdup(password); 
+    novoLogin->currentPassword = duplicateString(password);
     
     // Adiciona à árvore de logins
     addLoginToTree(&loginRoot, novoLogin);
@@ -116,67 +142,58 @@ int registerUser(char* name, char* numeroTel, char* birthdate, long int CPF, cha
 
 //Deslogar tirar da variavel global 
 int logout(long int CPF) {
-    if (currentLogin == NULL) {
-        return 2; // Ninguém está logado
+    // Se não há usuário logado OU CPF não corresponde, retorna erro genérico 1
+    if (currentLogin == NULL || currentLogin->currentCPF != CPF) {
+        return 1;
     }
-    
-    if (currentLogin->currentCPF != CPF) {
-        return 1; // CPF não corresponde ao usuário logado
-    }
-    
-    currentLogin = NULL; // Logout realizado
+
+    // Caso contrário, efetua logout
+    currentLogin = NULL;
     return 0; // Sucesso
 }
 
 //Muda a senha tanto no login quanto no usuario relacionado a ele
 int changePassword(long int CPF, char* currentPass, char* newPass) {
-    if (currentLogin == NULL) {
-        return 4; // Nenhum usuário logado
+    // 1: usuário não encontrado/logado ou CPF não confere
+    if (currentLogin == NULL || currentLogin->currentCPF != CPF) {
+        return 1;
     }
-    
-    if (currentLogin->currentCPF != CPF) {
-        return 1; // CPF não corresponde ao logado
-    }
-    
+
+    // 2: senha atual incorreta
     if (strcmp(currentLogin->currentPassword, currentPass) != 0) {
-        return 2; // Senha atual incorreta
+        return 2;
     }
-    
+
+    // 3: nova senha com menos de 8 caracteres
     if (strlen(newPass) < 8) {
-        return 3; // Nova senha inválida
+        return 3;
     }
-    
-    // Atualiza a senha no login
+
+    // Atualiza senha
     free(currentLogin->currentPassword);
-    currentLogin->currentPassword = strdup(newPass);
-    
-    // Atualiza também no perfil do usuário
+    currentLogin->currentPassword = duplicateString(newPass);
     alterPassword(CPF, newPass);
-    
-    return 0; // Sucesso
+    return 0;
 }
 
 //Muda o numero de telefone do perfil que ta associando a esse login
 int changeNumber(long int CPF, char* password, char* newNumber) {
-    if (currentLogin == NULL) {
-        return 4; // Nenhum usuário logado
+    // 1: usuário não encontrado ou CPF não confere
+    if (currentLogin == NULL || currentLogin->currentCPF != CPF) {
+        return 1;
     }
-    
-    if (currentLogin->currentCPF != CPF) {
-        return 1; // CPF não corresponde ao logado
-    }
-    
+
+    // 2: senha incorreta
     if (strcmp(currentLogin->currentPassword, password) != 0) {
-        return 2; // Senha incorreta
+        return 2;
     }
-    
+
+    // 3: novo número inválido
     if (!isValidPhone(newNumber)) {
-        return 3; // Novo número inválido
+        return 3;
     }
-    
-    // Chama a função do módulo USER para alterar o número no perfil
-    int status = alterNumber(CPF, newNumber); // função USER
-    
+
+    alterNumber(CPF, newNumber);
     return 0;
 }
 
@@ -215,7 +232,7 @@ int readLogins(FILE* file, LoginTree** root) {
         if (novo == NULL) return -1;
 
         novo->currentCPF = cpf;
-        novo->currentPassword = strdup(senha); // duplica string
+        novo->currentPassword = duplicateString(senha); // duplica string
 
         addLoginToTree(root, novo);
     }

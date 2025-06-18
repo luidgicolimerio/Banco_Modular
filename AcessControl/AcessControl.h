@@ -1,32 +1,16 @@
 #ifndef ACCESS_CONTROL_H
 #define ACCESS_CONTROL_H
 
+#include <stdio.h>
+
 #ifdef ACCESS_CONTROL_OWN
     #define ACCESS_SCOPE 
 #else
     #define ACCESS_SCOPE extern
 #endif
 
-#include <stdio.h>
-
-// --------------------------------------
-// Estrutura do login
-typedef struct login {
-    long int currentCPF;
-    char* currentPassword;
-} Login;
-
-// Estrutura da árvore de logins
-typedef struct loginTree {
-    Login* loginData;
-    struct loginTree* left;
-    struct loginTree* right;
-} LoginTree;
-
-// --------------------------------------
-// Variáveis globais
-ACCESS_SCOPE LoginTree* loginRoot;
-ACCESS_SCOPE Login* currentLogin;
+typedef struct login Login;
+typedef struct loginTree LoginTree;
 
 // --------------------------------------
 // Funções externas (interface principal)
@@ -156,8 +140,7 @@ int logout(long int CPF);
         - CPF (long int): número identificador do usuário que deseja deslogar.
     - Retorno: int
         - 0: logout realizado com sucesso.
-        - 1: CPF não corresponde ao usuário logado.
-        - 2: nenhum usuário está logado.
+        - 1: CPF inválido ou nenhum usuário está logado.
 
 -->Condições de acoplamento:
 
@@ -196,10 +179,9 @@ int changePassword(long int CPF, char* currentPass, char* newPass);
         - newPass (char*): nova senha desejada pelo usuário.
     - Retorno: int
         - 0: senha alterada com sucesso.
-        - 1: CPF não corresponde ao usuário logado.
+        - 1: usuário não encontrado ou não logado.
         - 2: senha atual incorreta.
         - 3: nova senha inválida (menos de 8 caracteres).
-        - 4: nenhum usuário logado.
 
 -->Condições de acoplamento:
 
@@ -240,10 +222,9 @@ int changeNumber(long int CPF, char* password, char* newNumber);
         - newNumber (char*): novo número de telefone a ser associado ao perfil.
     - Retorno: int
         - 0: número alterado com sucesso.
-        - 1: CPF não corresponde ao usuário logado.
+        - 1: usuário não encontrado ou não logado.
         - 2: senha incorreta.
         - 3: novo número inválido.
-        - 4: nenhum usuário logado.
 
 -->Condições de acoplamento:
 
@@ -356,5 +337,7 @@ int readLogins(FILE* file, LoginTree** root);
 */
 //*****************************************************************************************************************
 
+ACCESS_SCOPE LoginTree* loginRoot;
+ACCESS_SCOPE Login* currentLogin;
 
 #endif

@@ -1,7 +1,7 @@
 #include "accountForMain.h"
 #include "transactionsForMain.h"
 #include "user.h"
-#include "AccessControl.h"
+#include "AcessControl.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,23 +11,25 @@
 static int startup() {
 
 
-	FILE* FileForCheckingAccounts = fopen("FileForCheckingAccounts.txt", 'r');
+	FILE* FileForCheckingAccounts = fopen("FileForCheckingAccounts.txt", "r");
 	readCheckingAccounts(FileForCheckingAccounts);
 	fclose(FileForCheckingAccounts);
 
-	FILE* FileForSavingsAccounts = fopen("FileForSavingsAccounts.txt", 'r');
+	FILE* FileForSavingsAccounts = fopen("FileForSavingsAccounts.txt", "r");
 	readSavingsAccounts(FileForSavingsAccounts);
 	fclose(FileForSavingsAccounts);
 
-	FILE* FileForLogin = fopen("FileForLogins.txt", 'r');
-	readLogins(FileForLogin);
+	FILE* FileForLogin = fopen("FileForLogins.txt", "r");
+	readLogins(FileForLogin, &loginRoot);
 	fclose(FileForLogin);
 
-	FILE* FileForUser = fopen("FileForUser.txt", 'r');
-	readUserProfiles(FileForUser);
-	fclose(FileForUser);
+	FILE* FileForUser = fopen("FileForUser.txt", "rb");
+	if (FileForUser) {
+		readUserProfiles(FileForUser);
+		fclose(FileForUser);
+	}
 
-	FILE* FileForTransaction = fopen("FileForTransaction.txt", 'r');
+	FILE* FileForTransaction = fopen("FileForTransaction.txt", "r");
 	readTransactions(FileForTransaction);
 	fclose(FileForTransaction);
 
@@ -36,23 +38,25 @@ static int startup() {
 
 static int shutdown() {
 
-	FILE* FileForCheckingAccounts = fopen("FileForCheckingAccounts.txt", 'r');
+	FILE* FileForCheckingAccounts = fopen("FileForCheckingAccounts.txt", "w");
 	saveCheckingAccounts(FileForCheckingAccounts);
 	fclose(FileForCheckingAccounts);
 
-	FILE* FileForSavingsAccounts = fopen("FileForSavingsAccounts.txt", 'r');
+	FILE* FileForSavingsAccounts = fopen("FileForSavingsAccounts.txt", "w");
 	saveSavingsAccounts(FileForSavingsAccounts);
 	fclose(FileForSavingsAccounts);
 
-	FILE* FileForLogin = fopen("FileForLogins.txt", 'r');
-	saveLogins(FileForLogin);
+	FILE* FileForLogin = fopen("FileForLogins.txt", "w");
+	saveLogins(FileForLogin, loginRoot);
 	fclose(FileForLogin);
 
-	FILE* FileForUser = fopen("FileForUser.txt", 'r');
-	saveUserProfiles(FileForUser);
-	fclose(FileForUser);
+	FILE* FileForUser = fopen("FileForUser.txt", "wb");
+	if (FileForUser) {
+		saveUserProfiles(FileForUser);
+		fclose(FileForUser);
+	}
 
-	FILE* FileForTransaction = fopen("FileForTransaction.txt", 'r');
+	FILE* FileForTransaction = fopen("FileForTransaction.txt", "w");
 	saveTransactions(FileForTransaction);
 	fclose(FileForTransaction);
 
@@ -94,18 +98,21 @@ int main(void) {
 			scanf("%ld", &CPF);
 
 			printf("Type in your name:\n");
-			scanf("%s", &name);
+			scanf("%s", name);
 
 			printf("Type in your cellphone number:\n");
-			scanf("%s", &telNo);
+			scanf("%s", telNo);
 
 			printf("Type in your birthdate:\n");
-			scanf("%s", &birth);
+			scanf("%s", birth);
 
 			printf("Type in your password:\n");
-			scanf("%s", &password);
+			scanf("%s", password);
 
 			if (registerUser(name, telNo, birth, CPF, password) == 0) {
+				/* cria contas vinculadas ao novo CPF */
+				createSavingsAccount(CPF);
+				createCheckingAccount(CPF);
 				printf("Registered!\n");
 			}
 		}
@@ -117,7 +124,7 @@ int main(void) {
 			scanf("%ld", &CPF);
 
 			printf("Type in your password:\n");
-			scanf("%s", &password);
+			scanf("%s", password);
 
 			if (login(CPF, password) == 0) {
 				printf("Login Success!\n");
@@ -156,8 +163,8 @@ int main(void) {
 			getBalanceByType(CPF, &checkingBal, "checking");
 			getBalanceByType(CPF, &savingsBal, "savings");
 
-			printf("Balance in checking: &lf\n", checkingBal);
-			printf("Balance in savings: &lf\n", savingsBal);
+			printf("Balance in checking: %lf\n", checkingBal);
+			printf("Balance in savings: %lf\n", savingsBal);
 
 			userOption = 0;
 		}
@@ -169,9 +176,9 @@ int main(void) {
 			getLoginCPF(&CPF);
 
 			printf("Insert your current password:\n");
-			scanf("%s", &currPass);
+			scanf("%s", currPass);
 			printf("Insert your new password:\n");
-			scanf("%s", &newPass);
+			scanf("%s", newPass);
 
 			if (changePassword(CPF, currPass, newPass) == 0) {
 				printf("Password Changed!");
@@ -189,10 +196,10 @@ int main(void) {
 			getLoginCPF(&CPF);
 
 			printf("Insert your current password:\n");
-			scanf("%s", &currPass);
+			scanf("%s", currPass);
 
 			printf("Insert your new number:\n");
-			scanf("%s", &newNum);
+			scanf("%s", newNum);
 
 			if (changeNumber(CPF, currPass, newNum) == 0) {
 				printf("Number changed!");
@@ -213,8 +220,10 @@ int main(void) {
 			printf("Insert value to send from savings to checking:\n");
 			scanf("%lf", &val);
 
-			if (makeTransactionSavings(val, CPF, CPF, currdate) == 0) {
-				printf("Transaction Complete!");
+			if (makeTransactionSavings(val, CPF, CPF, 0, currdate) == 0) {
+				updateSavingsAccountBal(CPF, -val);
+				updateCheckingAccountBal(CPF, val);
+				printf("Transaction Complete!\n");
 			}
 			else {
 				printf("Transaction Failed...");
@@ -236,6 +245,10 @@ int main(void) {
 			scanf("%ld", &targetCPF);
 
 			if (makeTransactionChecking(val, CPF, targetCPF, currdate) == 0) {
+				updateCheckingAccountBal(CPF, -val);
+				/* garante conta alvo */
+				createCheckingAccount(targetCPF);
+				updateCheckingAccountBal(targetCPF, val);
 				printf("Transaction complete.\n");
 			}
 			else {
@@ -245,14 +258,15 @@ int main(void) {
 		}
 
 		else if (userOption == 6) {
-			if (logout() == 0) {
+			long int CPF=0; getLoginCPF(&CPF);
+			if (logout(CPF) == 0) {
 				printf("Logout successful.\n");
 			}
 			userOption = 0;
 		}
 
 		else if (userOption == 7) {
-			logout();
+			long int CPF=0; getLoginCPF(&CPF); logout(CPF);
 			printf("Logout successful.\n");
 			printf("Exiting ...\n");
 			if (shutdown() == 0) {
