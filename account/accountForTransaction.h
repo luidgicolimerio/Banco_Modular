@@ -27,6 +27,12 @@ int updateCheckingAccountBal(long int CPF, double val);
  *   // Se n�o encontrado, retorna 2
  *   // Se a opera��o deixaria o saldo negativo, retorna 1
  *   // Caso contr�rio, aplica a varia��o ao saldo e retorna 0
+ *
+ * Assertiva de entrada:
+ *   - CPF > 0
+ *   - val pode ser positivo (depósito) ou negativo (saque)
+ * Assertiva de saída:
+ *   - Se retorno 0, saldo da conta corrente foi atualizado.
  */
 int updateSavingsAccountBal(long int CPF, double val);
 /*
@@ -55,4 +61,10 @@ int updateSavingsAccountBal(long int CPF, double val);
  *   // Se n�o encontrado, retorna 2
  *   // Se a opera��o deixaria o saldo negativo, retorna 1
  *   // Caso contr�rio, aplica o valor ao saldo e retorna 0
+ *
+ * Assertiva de entrada:
+ *   - CPF > 0
+ *   - val pode ser positivo ou negativo
+ * Assertiva de saída:
+ *   - Se retorno 0, saldo da conta poupança foi atualizado.
  */

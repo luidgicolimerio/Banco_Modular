@@ -146,8 +146,9 @@ int main(void) {
             printf("5. Transfer to another user (checking)\n");
             printf("6. Deposit\n");
             printf("7. Withdraw\n");
-            printf("8. Log out\n");
-            printf("9. Log out and exit\n");
+            printf("8. Show my transactions\n");
+            printf("9. Log out\n");
+            printf("10. Log out and exit\n");
             printf("Option: ");
             scanf("%d", &userOption);
 
@@ -209,37 +210,36 @@ int main(void) {
                     printf("Transfer failed.\n");
                 }
             } else if (userOption == 6) {
-    int type;
-    double amount;
-    printf("1. Deposit to checking\n2. Deposit to savings\nOption: ");
-    scanf("%d", &type);
-    printf("Amount: ");
-    scanf("%lf", &amount);
+                int type;
+                double amount;
+                printf("1. Deposit to checking\n2. Deposit to savings\nOption: ");
+                scanf("%d", &type);
+                printf("Amount: ");
+                scanf("%lf", &amount);
 
-    int result = -1;
-    if (type == 1) {
-        result = makeTransactionChecking(amount, CPF, CPF, currdate);
-    } else if (type == 2) {
-        result = makeTransactionSavings(amount, CPF, CPF, 0, currdate);
-    } else {
-        printf("Invalid type.\n");
-    }
+                int result = -1;
+                if (type == 1) {
+                    result = makeTransactionChecking(amount, CPF, CPF, currdate);
+                } else if (type == 2) {
+                    result = makeTransactionSavings(amount, CPF, CPF, 0, currdate);
+                } else {
+                    printf("Invalid type.\n");
+                }
 
-    if (result == 0) {
-        printf("Deposit successful.\n");
+                if (result == 0) {
+                    printf("Deposit successful.\n");
 
-        double bal = 0;
-        const char* accountType = (type == 1) ? "checking" : "savings";
-        if (getBalanceByType(CPF, &bal, accountType) == 0) {
-            printf("Updated balance (%s): %.2lf\n", accountType, bal);
-        } else {
-            printf("Error retrieving updated balance.\n");
-        }
+                    double bal = 0;
+                    const char* accountType = (type == 1) ? "checking" : "savings";
+                    if (getBalanceByType(CPF, &bal, accountType) == 0) {
+                        printf("Updated balance (%s): %.2lf\n", accountType, bal);
+                    } else {
+                        printf("Error retrieving updated balance.\n");
+                    }
 
-    } else {
-        printf("Deposit failed.\n");
-    }
-
+                } else {
+                    printf("Deposit failed.\n");
+                }
             } else if (userOption == 7) {
                 int type;
                 double amount;
@@ -262,11 +262,15 @@ int main(void) {
                     printf("Invalid option.\n");
                 }
             } else if (userOption == 8) {
+                if (showTransactions(CPF) != 0) {
+                    printf("No transactions to display or error.\n");
+                }
+            } else if (userOption == 9) {
                 if (logout(CPF) == 0) {
                     printf("Logged out.\n");
                     loggedIn = 0;
                 }
-            } else if (userOption == 9) {
+            } else if (userOption == 10) {
                 logout(CPF);
                 printf("Logging out and exiting...\n");
                 shutdown();

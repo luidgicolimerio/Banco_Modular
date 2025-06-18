@@ -25,6 +25,11 @@ int createSavingsAccount(long int CPF);
  *   // Aloca nova struct
  *   // Insere na arvore e retorna 0
  *   // Em caso de falha de alocacao, retorna -1
+ *
+ * Assertiva de entrada:
+ *   - CPF > 0 e possui 11 dígitos
+ * Assertiva de saída:
+ *   - Se retorno 0, conta poupança criada e inserida na árvore.
  */
 
 int createCheckingAccount(long int CPF);
@@ -53,4 +58,9 @@ int createCheckingAccount(long int CPF);
  *   // Aloca struct da conta corrente
  *   // Insere na arvore e retorna 0
  *   // Se malloc falhar, retorna -1
+ *
+ * Assertiva de entrada:
+ *   - CPF > 0 e possui 11 dígitos
+ * Assertiva de saída:
+ *   - Se retorno 0, conta corrente criada e inserida na árvore.
  */

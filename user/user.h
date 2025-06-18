@@ -30,6 +30,14 @@ Descrição:
 -1 = Erro de alocação de memória
 Hipóteses: árvore já inicializada ou vazia
 Restrições: não grava perfil se qualquer validação falhar
+Assertiva de entrada:
+- name != NULL
+- numeroTel != NULL
+- birthdate no formato "DD/MM/AAAA"
+- CPF possui 11 dígitos (>0)
+- password com 8 ou mais caracteres
+Assertiva de saída:
+- Se retorno 0, o perfil foi inserido na árvore global.
 */
 int createUserProfile(char* name, char* numeroTel, char* birthdate, long long CPF, char* password);
 
@@ -47,6 +55,11 @@ Descrição:
 2 = CPF não encontrado
 Hípóteses: a árvore é uma ABB de CPF
 Restrições: tempo de busca de ABB, que é tempo O(h)
+Assertiva de entrada:
+- CPF > 0
+- no pode ser NULL (árvore parcial)
+Assertiva de saída:
+- Se retorno 0, usuário localizado em árvore (ou ponteiro global).
 */
 int getUser(long long CPF, userProfileTree* no);
 
@@ -63,6 +76,11 @@ Descrição:
 2 = Nova senha com menos de 8 caracteres
 Hípóteses: novaSenha já alocada pelo chamador
 Restrições: libera senha antiga mas duplica a nova
+Assertiva de entrada:
+- CPF > 0
+- newPass != NULL e tamanho ≥ 8
+Assertiva de saída:
+- Se retorno 0, senha atualizada no perfil.
 */
 int alterPassword(long long CPF, const char* newPass);
 
@@ -79,6 +97,11 @@ Descrição:
 2 = Novo número inválido
 Hípóteses: telefone deve conter 8-13 dígitos
 Restrições: duplica a string pra dentro do perfil
+Assertiva de entrada:
+- CPF > 0
+- numero != NULL e 8-13 dígitos
+Assertiva de saída:
+- Se retorno 0, telefone alterado no perfil.
 */
 int alterNumber(long long CPF, const char* numero);
 
@@ -93,6 +116,10 @@ Descrição:
 1 = Perfil já existe.
 Hípóteses: profilePtr já alocado e todo preenchido
 Restrições: Se não for ABB com balanceamento
+Assertiva de entrada:
+- profile != NULL
+Assertiva de saída:
+- Se retorno 0, nó inserido na árvore.
 */
 int addProfileToTree(userProfile* profile);
 
@@ -107,6 +134,10 @@ Descrição:
 1 = Ponteiro de arquivo inválido.
 Hípóteses: arquivo já aberto em modo wb
 Restrições: só pré-ordem e grava tamanho + string + CPF
+Assertiva de entrada:
+- arquivo != NULL (modo wb)
+Assertiva de saída:
+- Se retorno 0, árvore serializada no arquivo.
 */
 int saveUserProfiles(FILE* arquivo);
 
@@ -121,6 +152,10 @@ Descrição:
 1 = Ponteiro de arquivo inválido.
 Hípóteses: arquivo já aberto em modo rb e salvo por saveUserProfiles
 Restrições: limpa a árvore antiga??
+Assertiva de entrada:
+- arquivo != NULL (modo rb)
+Assertiva de saída:
+- Se retorno 0, árvore reconstruída a partir do arquivo.
 */
 int readUserProfiles(FILE* arquivo);
 

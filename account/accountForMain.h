@@ -29,6 +29,13 @@ int getBalanceByType(long int CPF, double* balance, const char* type);
  *   // Busca o CPF na arvore
  *   // Se nao encontrado, retorna 1
  *   // Se encontrado, armazena saldo em *balance e retorna 0
+ *
+ * Assertiva de entrada:
+ *   - CPF > 0
+ *   - balance != NULL
+ *   - type  != NULL e igual a "checking" ou "savings"
+ * Assertiva de saída:
+ *   - Se retorno 0, *balance conterá o saldo da conta requerida.
  */
 int saveSavingsAccounts(FILE* file);
 /*
@@ -54,6 +61,11 @@ int saveSavingsAccounts(FILE* file);
  *   // Se file for NULL, retorna 1
  *   // Percorre a arvore AVL e grava: CPF saldo
  *   // Retorna 0 apos concluir
+ *
+ * Assertiva de entrada:
+ *   - file != NULL e aberto para escrita
+ * Assertiva de saída:
+ *   - Se retorno 0, todas as contas correntes foram persistidas.
  */
 int saveCheckingAccounts(FILE* file);
 /*
@@ -79,6 +91,11 @@ int saveCheckingAccounts(FILE* file);
  *   // Se file for NULL, retorna 1
  *   // Percorre a arvore AVL e grava os campos das contas poupanca
  *   // Retorna 0 ao finalizar
+ *
+ * Assertiva de entrada:
+ *   - file != NULL e aberto para escrita
+ * Assertiva de saída:
+ *   - Se retorno 0, todas as contas poupança foram persistidas.
  */
 int readCheckingAccounts(FILE* file);
 /*
@@ -105,6 +122,11 @@ int readCheckingAccounts(FILE* file);
  *   // Enquanto conseguir ler CPF e saldo
  *   // Cria struct de conta, insere na arvore AVL
  *   // Retorna 0 ao final
+ *
+ * Assertiva de entrada:
+ *   - file != NULL e aberto para leitura
+ * Assertiva de saída:
+ *   - Se retorno 0, árvore de contas correntes reconstruída.
  */
 int readSavingsAccounts(FILE* file);
 /*
@@ -131,6 +153,11 @@ int readSavingsAccounts(FILE* file);
  *   // Le CPF, saldo, taxa de juros de cada linha
  *   // Aloca struct, insere na arvore
  *   // Retorna 0 ao fim da leitura
+ *
+ * Assertiva de entrada:
+ *   - file != NULL e aberto para leitura
+ * Assertiva de saída:
+ *   - Se retorno 0, árvore de contas poupança reconstruída.
  */
 int createSavingsAccount(long int CPF);
 int createCheckingAccount(long int CPF);
