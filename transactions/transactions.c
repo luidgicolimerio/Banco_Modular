@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "account.h"
+#include "accountForTransaction.h"
 
 typedef struct transaction {
     double      val;
@@ -163,31 +163,41 @@ int makeTransactionSavings(double value, long int sourceCPF, long int targetCPF,
     return 0;
 }
 
-int makeTransactionChecking(double value, long int sourceCPF, long int targetCPF, struct tm date) { 
+int makeTransactionChecking(double value, long int sourceCPF, long int targetCPF, struct tm date) {
     int result;
+
     transaction* tx = malloc(sizeof *tx);
     tx->val = value;
     tx->sourceCPF = sourceCPF;
     tx->targetCPF = targetCPF;
     tx->date = date;
-    strcpy(tx->type, "transfer");
 
-    result = updateCheckingAccountBal(sourceCPF, -value);
-    if (result == 1) {
-        return 5; // saldo insuficiente
-    }
-    if (result == 2) {
-        return 3; // CPF nao encontrado
-    }
-    result = updateCheckingAccountBal(targetCPF, value);
-    if (result == 2) {
-        return 3; // CPF nao encontrado
+    // Detecta depósito (auto-transferência)
+    if (sourceCPF == targetCPF) {
+        strcpy(tx->type, "deposit");
+
+        // Apenas credita valor
+        result = updateCheckingAccountBal(sourceCPF, value);
+        if (result == 2) return 3;
+    } else {
+        strcpy(tx->type, "transfer");
+
+        result = updateCheckingAccountBal(sourceCPF, -value);
+        if (result == 1) return 5; // saldo insuficiente
+        if (result == 2) return 3; // CPF não encontrado
+
+        result = updateCheckingAccountBal(targetCPF, value);
+        if (result == 2) return 3;
     }
 
     addTransaction(sourceCPF, tx);
-    addTransaction(targetCPF, tx);
+    if (sourceCPF != targetCPF) {
+        addTransaction(targetCPF, tx);
+    }
+
     return 0;
 }
+
 
 // Exibe todas as transações de um CPF. 
 int showTransactions(long int CPF){
