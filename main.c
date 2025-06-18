@@ -75,7 +75,7 @@ int main(void) {
 		printf("Select option:\n");
 		printf("1. Login\n");
 		printf("2. Register\n");
-		printf("3. Exit");
+		printf("3. Exit\n");
 
 		scanf("%d", &userOption);
 
